@@ -25,7 +25,7 @@ import json
 import numpy as np
 import pandas as pd
 import re
-import urllib.request
+from urllib2 import urlopen
 from bs4 import BeautifulSoup
 from datetime import date
 
@@ -58,7 +58,7 @@ class KeyRatiosDownloader(object):
         url = (r'http://financials.morningstar.com/ajax/exportKR2CSV.html?' +
                r'&callback=?&t={t}&region={reg}&culture={cult}&cur={cur}'.format(
                    t=ticker, reg=region, cult=culture, cur=currency))
-        with urllib.request.urlopen(url) as response:
+        with urlopen(url) as response:
             tables = self._parse_tables(response)
             response_structure = [
                 # Original Name, New pandas.DataFrame Name
@@ -330,7 +330,7 @@ class FinancialsDownloader(object):
                r'&region=usa&culture=en-US&cur=USD' +
                r'&reportType=' + report_type + r'&period=12' +
                r'&dataType=A&order=asc&columnYear=5&rounding=3&view=raw')
-        with urllib.request.urlopen(url) as response:
+        with urlopen(url) as response:
             json_text = response.read().decode(u'utf-8')
 
             ##############################
