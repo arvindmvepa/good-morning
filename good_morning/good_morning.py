@@ -58,25 +58,25 @@ class KeyRatiosDownloader(object):
         url = (r'http://financials.morningstar.com/ajax/exportKR2CSV.html?' +
                r'&callback=?&t={t}&region={reg}&culture={cult}&cur={cur}'.format(
                    t=ticker, reg=region, cult=culture, cur=currency))
-        with urlopen(url) as response:
-            tables = self._parse_tables(response)
-            response_structure = [
-                # Original Name, New pandas.DataFrame Name
-                (u'Financials', u'Key Financials'),
-                (u'Key Ratios -> Profitability', u'Key Margins % of Sales'),
-                (u'Key Ratios -> Profitability', u'Key Profitability'),
-                (u'Key Ratios -> Growth', None),
-                (u'Revenue %', u'Key Revenue %'),
-                (u'Operating Income %', u'Key Operating Income %'),
-                (u'Net Income %', u'Key Net Income %'),
-                (u'EPS %', u'Key EPS %'),
-                (u'Key Ratios -> Cash Flow', u'Key Cash Flow Ratios'),
-                (u'Key Ratios -> Financial Health',
-                 u'Key Balance Sheet Items (in %)'),
-                (u'Key Ratios -> Financial Health',
-                 u'Key Liquidity/Financial Health'),
-                (u'Key Ratios -> Efficiency Ratios', u'Key Efficiency Ratios')]
-            frames = self._parse_frames(tables, response_structure)
+        response =  urlopen(url)
+        tables = self._parse_tables(response)
+        response_structure = [
+            # Original Name, New pandas.DataFrame Name
+            (u'Financials', u'Key Financials'),
+            (u'Key Ratios -> Profitability', u'Key Margins % of Sales'),
+            (u'Key Ratios -> Profitability', u'Key Profitability'),
+            (u'Key Ratios -> Growth', None),
+            (u'Revenue %', u'Key Revenue %'),
+            (u'Operating Income %', u'Key Operating Income %'),
+            (u'Net Income %', u'Key Net Income %'),
+            (u'EPS %', u'Key EPS %'),
+            (u'Key Ratios -> Cash Flow', u'Key Cash Flow Ratios'),
+            (u'Key Ratios -> Financial Health',
+             u'Key Balance Sheet Items (in %)'),
+            (u'Key Ratios -> Financial Health',
+             u'Key Liquidity/Financial Health'),
+            (u'Key Ratios -> Efficiency Ratios', u'Key Efficiency Ratios')]
+        frames = self._parse_frames(tables, response_structure)
 
             ############################
             # Error Handling for Ratios
@@ -330,22 +330,22 @@ class FinancialsDownloader(object):
                r'&region=usa&culture=en-US&cur=USD' +
                r'&reportType=' + report_type + r'&period=12' +
                r'&dataType=A&order=asc&columnYear=5&rounding=3&view=raw')
-        with urlopen(url) as response:
-            json_text = response.read().decode(u'utf-8')
+        response =  urlopen(url)
+        json_text = response.read().decode(u'utf-8')
 
-            ##############################
-            # Error Handling
-            ##############################
+        ##############################
+        # Error Handling
+        ##############################
 
-            # Wrong ticker
-            if len(json_text)==0:
-                raise ValueError("MorningStar cannot find the ticker symbol "
-                                 "you entered or it is INVALID. Please try "
-                                 "again.")
+        # Wrong ticker
+        if len(json_text)==0:
+            raise ValueError("MorningStar cannot find the ticker symbol "
+                             "you entered or it is INVALID. Please try "
+                             "again.")
 
-            json_data = json.loads(json_text)
-            result_soup = BeautifulSoup(json_data[u'result'],u'html.parser')
-            return self._parse(result_soup)
+        json_data = json.loads(json_text)
+        result_soup = BeautifulSoup(json_data[u'result'],u'html.parser')
+        return self._parse(result_soup)
 
     def _parse(self, soup):
         u"""Extracts and returns a pandas.DataFrame corresponding to the
