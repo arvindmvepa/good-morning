@@ -78,26 +78,26 @@ class KeyRatiosDownloader(object):
             (u'Key Ratios -> Efficiency Ratios', u'Key Efficiency Ratios')]
         frames = self._parse_frames(tables, response_structure)
 
-            ############################
-            # Error Handling for Ratios
-            ############################
+        ############################
+        # Error Handling for Ratios
+        ############################
 
-            # Empty String
-            if len(ticker) == 0:
-                raise ValueError("You did not enter a ticker symbol.  Please"
-                                 " try again.")
-            # Wrong ticker symbol
-            elif frames == "MorningStar could not find the ticker":
-                raise ValueError("MorningStar cannot find the ticker symbol "
-                                 "you entered or it is INVALID. Please try "
-                                 "again.")
+        # Empty String
+        if len(ticker) == 0:
+            raise ValueError("You did not enter a ticker symbol.  Please"
+                             " try again.")
+        # Wrong ticker symbol
+        elif frames == "MorningStar could not find the ticker":
+            raise ValueError("MorningStar cannot find the ticker symbol "
+                             "you entered or it is INVALID. Please try "
+                             "again.")
 
-            currency = re.match(u'^.* ([A-Z]+) Mil$',
-                                frames[0].index[0]).group(1)
-            frames[0].index.name += u' ' + currency
-            if conn:
-                self._upload_frames_to_db(ticker, frames, conn)
-            return frames
+        currency = re.match(u'^.* ([A-Z]+) Mil$',
+                            frames[0].index[0]).group(1)
+        frames[0].index.name += u' ' + currency
+        if conn:
+            self._upload_frames_to_db(ticker, frames, conn)
+        return frames
 
     @staticmethod
     def _parse_tables(response):
